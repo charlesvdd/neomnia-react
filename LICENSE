@@ -1,0 +1,165 @@
+
+---
+
+**LICENSE**  
+```text
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+
+Préambule
+
+La Licencié publique générale GNU est une licence libre, copyleft, pour
+logiciels et autres ouvrages. Les licences publiques générales GNU suivantes
+ont pour but de préserver votre liberté de partager et modifier tous
+les programmes, ainsi qu'à garantir que le logiciel reste libre pour tous
+ses utilisateurs. Cette licence s’applique à la plupart des logiciels GNU,
+ainsi qu'à d'autres œuvres libres, comme les manuels.
+
+Le « Programme » désigne toute œuvre couverte par cette licence.
+Une « Œuvre dérivée » désigne une œuvre basée sur ou dérivée du Programme
+en ce sens que l'on peut appliquer les dispositions du droit d'auteur au
+Programme (par opposition à une situation où la même œuvre serait simplement
+agrégée avec le Programme). Par exemple, traduire un Programme dans une
+autre langue constitue une œuvre dérivée. Ajouter des fonctions au Programme,
+porter le Programme sur une nouvelle plate-forme sont également des œuvres
+dérivées. Cependant, travailler à partir d'un certain morceau de code — par
+exemple, le compiler sans modification — n'est pas en soi une œuvre dérivée.
+
+Une œuvre dérivée doit porter une mention de copyright à l’auteur ou aux
+auteurs de l’œuvre source selon la Section 5. Sous réserve des dispositions de
+cette licence, l’auteur ou les détenteurs de droit d'auteur du Programme vous
+accordent le droit d’établir et distribuer des œuvres dérivées.
+
+Une « Licence de distribution » pour un Programme signifie un accord oral
+ou écrit, selon lequel vous pouvez distribuer des copies du Programme ou des
+œuvres dérivées par voie commerciale ou non (dans ce cas, en échange de
+paiement ou non).
+
+Une « Version modifiée » d'un Programme signifie tout travail contenant
+le Programme ou des portions du Programme, avec des modifications ou des
+ajouts, ou bien un travail contenant le Programme tel quel, sauf que l’on
+l’a renommé ou déplacé à un emplacement différent. Par exemple, renommer
+un fichier exécutif ou bibliothèque, modifier des pointeurs vers des symboles
+etc., sont des modifications. Ajouter ou enlever des fichiers ne constituent
+pas des modifications en soi.
+
+La « Source originale » d'un Programme signifie la forme lisible par un
+humain du Programme tel que remis par son auteur, généralement dans une forme
+« texte brut ». Elle peut inclure des scripts permettant de générer le Programme
+binaire à partir de ce texte. Les fichiers qui font partie d'une distribution
+normale du Programme source sont désignés comme appartenant au « Code source ».
+
+Le « Code Objet » d'un Programme signifie toute forme du Programme
+autre que le Code Source (par exemple, un exécutable, un fichier objet, un
+bytecode interprété ou compilé, etc.).
+
+Les tâches du Commercial Distribution s’appliquent aux œuvres libres :
++ Vous pouvez distribuer du code source ou du code objet aux autres,
++ Sous réserve de respecter la licence (ceci inclut le fait d’inclure
+  le texte intégral de cette licence dans chaque copie du Programme),
++ Vous pouvez ajouter vos propres conditions à la copie, mais ces
+  conditions ne peuvent pas restreindre davantage les libertés de l’utilisateur
+  par rapport à ce que cette licence permet.
+
+Pour tout Programme, donc, l’utilisateur est libre de partager ou modifier
+le Programme, sous réserve des conditions suivantes, qui s’appliquent à
+toutes les versions du Programme, sauf si d’autres dispositions
+contractuelles donnent des garanties plus spécifiques pour ce Programme
+(voyez la Section 7).
+
+=====================
+TERMS AND CONDITIONS
+0. Définitions.
+« Cette Licence » fait référence à la présente Licencié publique générale GNU.
+Le « Programme » désigne tout travail couvert par cette Licence. Une « Œuvre dérivée »
+désigne tout travail contenant le Programme ou des portions du Programme, ou
+fondant des éléments de structure, d’organisation ou d’API. Sous réserve des
+dispositions de cette Licence, l’auteur ou détenteur du droit d’auteur du
+Programme vous accorde la permission de copier, distribuer et/ou modifier le
+Programme selon les termes de cette Licence.
+
+« Source originale » d’un Programme signifie la forme lisible par un humain
+du Programme, tel que remis par son auteur ou distribué par d’autres via cette
+Licence. « Code Objet » signifie toute forme du Programme autre que le Code
+Source.
+
+Une « Forme Standard » d’un Programme désigne la forme de distribution dans
+laquelle le Programme (ou ses travaux dérivés) est copié, modifié ou distribué
+en conformité avec le présent document. Un « Patch » désigne un fichier au
+format « diff » ou « diff -u » qu’on peut envoyer à l’auteur pour permettre
+à cette personne de recréer le programme en partant de la Source originale.
+
+Les « Outils représentatifs » désignent l’œuvre dont la distribution est
+incluse habituellement dans la conception d’origine du Programme (comme un
+explorateur de liens HTML, un système de construction de bibliothèques,
+des fichiers make, etc.) — ce sont simplement des exemples de l’environnement
+ou des outils servant à générer et tester le Programme. Dans le cas du Programme
+GNU de base, cela inclut le compilateur GCC, la bibliothèque GLIBC, etc.
+
+1. Code source.
+Le « Code source » d’un Programme désigne la forme modifiable de ce Programme,
+telle que créée par les développeurs. Le « Code Objet » désigne la forme exécutable
+ou binaire issue du Code Source. Lors de la distribution d’œuvres dérivées,
+toutes les parties modifiées du Code Source doivent être rendues disponibles
+dans un format lisible par un humain.
+
+2. Licence de référence et informations de copyright.
+Chaque copie du Code Source doit comprendre une en-tête précisant :
+  * Le Copyright (c) 2025 Charles Van Den Driessche – Neomnia
+  * Une brève mention que ce fichier fait partie de « neomnia-react » et qu’il
+    est distribué sous licence GNU GPL v3.0, identifiant le nom de la licence
+    et l’URL : https://www.gnu.org/licenses/gpl-3.0.html.
+
+3. Objet du Code Objet.
+Lorsque vous distribuez le Code Objet d’un Programme, vous devez fournir une
+offre écrite (valable pour au moins trois ans) fournissant le Code Source complet
+correspondant, ou bien inclure directement une copie du Code Source dans la même
+distribution. Vous pouvez satisfaire cette obligation en communiquant des
+informations (ex. : URL GitHub) permettant récupéer librement le Code Source.
+
+4. Modifications.
+Si vous modifiez le Programme, vous devez ajouter une note précisant les
+changements effectués, ainsi que la date, et conserver un historique des versions.
+Le Programme original et les modifications sont couverts par la même licence.
+
+5. Distribution d’œuvres dérivées.
+Toute œuvre dérivée que vous distribuez doit être publiée sous cette même
+Licence (GNU GPL v3.0). Vous ne pouvez pas imposer de conditions supplémentaires
+qui restreignent davantage les droits accordés par la Licence.
+
+6. Attribution.
+Vous devez conserver dans chaque fichier modifié les mentions de copyright
+initial, ainsi que les avis de licence. Les travaux réalisés par d’autres
+auteurs reprennent leurs mentions de copyright originales.
+
+7. Garanties et responsabilité.
+Le Programme est fourni « tel quel », sans garantie d’aucune sorte, expresse
+ou implicite. En aucune circonstance, les auteurs ou les détenteurs de
+droits ne pourront être tenus responsables de dommages découlant de l’utilisation
+du Programme.
+
+8. Durée de la Licence.
+La Licence reste en vigueur aussi longtemps que dure le droit d’auteur.
+Si des dispositions de cette Licence ne sont pas applicables dans votre
+pays, ces dispositions seront remplacées par des dispositions licites
+proches de l’esprit de la Licence, sans affecter le reste de celle-ci.
+
+9. Acceptation de la Licence.
+Le seul fait de copier, distribuer ou modifier le Programme selon les termes
+de cette Licence implique votre acceptation irrévocable de celle-ci. Si vous
+n’acceptez pas les termes de cette Licence, vous ne devez pas copier,
+distribuer ou modifier le Programme.
+
+10. Versions ultérieures.
+La Free Software Foundation peut publier, à l’avenir, de nouvelles versions
+de la GNU GPL. Vous pouvez choisir de distribuer votre Programme selon les
+termes de la version 3 seulement, ou selon toute version ultérieure ratifiée
+par la Free Software Foundation. L’avertissement figurant dans le Code Source
+vous indiquera la version minimale sous laquelle le Programme peut être distribué.
+
+Pour le texte complet et officiel, consultez :  
+<https://www.gnu.org/licenses/gpl-3.0.txt>
