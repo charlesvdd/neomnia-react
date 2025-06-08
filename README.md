@@ -1,111 +1,123 @@
-Here is the translation of the script into English:
+# create\_next\_i18n\_pwa.sh
 
-```markdown
-# neomnia-react
+This Bash script automates the creation of a complete **Next.js** project that includes:
 
-Next.js / React Kickstarter for Neomnia
-
-## Description
-
-This repository provides a base ("kickstarter") to quickly start a Next.js/React project within the Neomnia ecosystem.
-It includes a minimal setup to launch a Next.js site with React, ESLint, Prettier, and Tailwind CSS, along with best practices for folder structure and commits.
-
-## Author and License
-
-* **Author:** Charles Van Den Driessche – Neomnia
-* **Year:** 2025
-* **Website:** [www.neomnia.net](https://www.neomnia.net)
-* **License:** GNU General Public License v3.0 (see the [LICENSE](./LICENSE) file for the full text).
-
-```
-neomnia-react/
-├── .env.example           # Environment variables example
-├── .eslintrc.json         # ESLint configuration
-├── .gitignore
-├── .prettierrc            # Prettier configuration
-├── LICENSE                # GNU GPL v3.0 License
-├── README.md              # This file
-├── next.config.js         # Next.js configuration
-├── package.json
-├── postcss.config.js      # PostCSS configuration for Tailwind
-├── tailwind.config.js     # Tailwind CSS configuration
-├── tsconfig.json          # (if TypeScript is selected)
-├── public/                # Static resources (images, favicon, etc.)
-├── src/                   # Source code
-│   ├── components/        # Reusable React components
-│   ├── pages/             # Next.js pages (routes)
-│   │   ├── _app.tsx
-│   │   ├── index.tsx
-│   │   └── api/           # API endpoints (if necessary)
-│   └── styles/            # CSS/Tailwind files
-└── jest.config.js         # (if tests are configured)
-```
-
-## Prerequisites
-
-* **Node.js** ≥ 14.x or higher
-* **npm** or **yarn**
-* Access to a **bash** terminal
-
-## Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone git@github.com:YourAccount/neomnia-react.git
-   cd neomnia-react
-   ```
-
-## Usage
-
-1. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-2. **Start the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-3. **Open your browser**
-   Go to [http://localhost:3000](http://localhost:3000) to see the application.
-
-## Project Structure
-
-After installation, your project will look like this:
-
-```
-my-react-project/
-├── node_modules/         # Installed dependencies
-├── public/               # Static files
-├── src/                  # Source code
-│   ├── components/       # React components
-│   ├── pages/            # Next.js pages
-│   └── styles/           # Styles (CSS/Tailwind)
-├── .eslintrc.json        # ESLint config
-├── .prettierrc           # Prettier config
-├── .gitignore
-├── next.config.js        # Next.js config
-├── package.json
-└── tailwind.config.js    # Tailwind config
-```
-
-## Optional Additions
-
-To add Prettier, Husky, and lint-staged:
-
-```bash
-npm install -D prettier eslint-config-prettier eslint-plugin-prettier husky lint-staged
-npx husky install
-npx husky add .husky/pre-commit "npx lint-staged"
-```
-
-Then, create the `.prettierrc` and `.lintstagedrc` files if needed.
+* **Next.js** setup with Tailwind CSS, ESLint, and a `src/` directory structure
+* Native **i18n** configuration for multiple locales
+* Optional **PWA** support via `next-pwa` and automatic `manifest.json` generation
+* `locales/` directory with JSON translation files for each locale
+* Automatic **MIT license** file generation using the provided author name
+* Git repository initialization with an initial commit
 
 ---
 
-Enjoy! Feel free to open an issue if you encounter a problem or wish to suggest an improvement.
+## Prerequisites
+
+* **Node.js** ≥ 16.x
+* **npm** or **yarn**
+* **bash** shell (Linux/macOS)
+* Write permissions in the target directory
+
+---
+
+## Installation
+
+1. Navigate to the directory where you want to store the script:
+
+   ```bash
+   cd ~/scripts
+   ```
+2. Download the script (via `curl` or by cloning the repo):
+
+   ```bash
+   curl -fsSL -o create_next_i18n_pwa.sh \
+     https://raw.githubusercontent.com/charlesvdd/neomnia-react/main/create_next_i18n_pwa.sh
+   ```
+3. Make it executable:
+
+   ```bash
+   chmod +x create_next_i18n_pwa.sh
+   ```
+
+---
+
+## Usage
+
+```bash
+./create_next_i18n_pwa.sh -n <project_name> -a "<Author Name>" [options]
 ```
+
+### Available Options
+
+| Option        | Description                                                          | Default              |
+| ------------- | -------------------------------------------------------------------- | -------------------- |
+| `-n <name>`   | **(Required)** The name of the project to create                     | —                    |
+| `-a <author>` | **(Required)** Author name for the MIT license file                  | —                    |
+| `-d <dir>`    | Base directory where the new project folder will be created          | Current directory    |
+| `-l <locals>` | Comma-separated list of locales (e.g. `"fr,en,es"`)                  | `fr,en`              |
+| `-D <locale>` | Default locale (must be one of those listed with `-l`)               | First locale in list |
+| `-p`          | Enable PWA support (install `next-pwa` and generate `manifest.json`) | Disabled             |
+| `-h`          | Display this help message                                            | —                    |
+
+### Examples
+
+* **Basic i18n** (French/English):
+
+  ```bash
+  ./create_next_i18n_pwa.sh -n my-app -a "John Doe"
+  ```
+
+* **i18n + PWA** with three locales (FR, EN, ES) and default set to ES:
+
+  ```bash
+  ./create_next_i18n_pwa.sh \
+    -n my-app-pwa \
+    -a "John Doe" \
+    -l "fr,en,es" \
+    -D es \
+    -p
+  ```
+
+---
+
+## Expected Project Structure
+
+After running the script, your new project folder will look like this:
+
+```
+my-app/                  # Root project directory
+├── locales/             # Translation JSON files
+│   ├── fr/common.json
+│   └── en/common.json
+├── node_modules/        # Installed dependencies
+├── public/              # Static files (includes manifest.json if -p)
+├── src/                 # Source code (pages, components, styles)
+│   ├── components/
+│   ├── pages/
+│   └── styles/
+├── .eslintrc.json       # ESLint configuration
+├── .prettierrc          # Prettier configuration
+├── LICENSE              # MIT license file
+├── next.config.js       # Next.js configuration (i18n + PWA if enabled)
+├── package.json         # Project metadata and scripts
+└── tailwind.config.js   # Tailwind CSS configuration
+```
+
+---
+
+## Running Your Application
+
+```bash
+cd my-app
+npm install       # Install dependencies
+npm run dev       # Start development server
+```
+
+Open your browser at **[http://localhost:3000](http://localhost:3000)** to see your Next.js app in action.
+
+---
+
+## Contributing
+
+Pull requests, issues, and suggestions are welcome!
+Please open an issue or a pull request on the GitHub repository.
