@@ -2,144 +2,155 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# -----------------------------------------------------------------------------
-# Non-interactive installation script for Next.js/React + Tailwind + dev tools
-# Usage: sudo install_nextjs_auto.sh \
-#            -n my-project-name \
-#            -a "Author Name" \
-#            [-d /path/to/base-dir]
-# -----------------------------------------------------------------------------
-
-# --- Logging ---
-LOG_FILE="/var/log/nextjs_setup_$(date +%Y%m%d_%H%M%S).log"
-exec > >(tee -a "$LOG_FILE") 2>&1
-
-# --- Default Config ---
-NODE_MAJOR_MINIMUM=20
-BASE_DIR_DEFAULT="$HOME/projects"
-
-# --- Read options ---
-PROJECT_NAME=""
-AUTHOR_NAME=""
-BASE_DIR="$BASE_DIR_DEFAULT"
+################################################################################
+# Script de création d'un projet Next.js + Tailwind + ESLint + i18n (+ PWA)
+# Usage :
+#   ./create_next_i18n_pwa.sh \
+#      -n mon-projet \
+#      -a "Auteur Nom" \
+#      [-d /chemin/base] \
+#      [-l "fr,en,es"] \
+#      [-D fr] \
+#      [-p]
+# Options :
+#   -n NOM         nom du projet (mandatory)
+#   -a AUTEUR      nom pour LICENSE (MIT) (mandatory)
+#   -d BASE_DIR    répertoire parent (default: cwd)
+#   -l LOCALES     locales séparées par des virgules (default: fr,en)
+#   -D DEFAULT     locale par défaut (default: première de la liste)
+#   -p             activer PWA manifest.json (optional)
+################################################################################
 
 usage() {
-  echo "Usage: sudo $0 -n <project-name> -a \"<Author Name>\" [-d <base-dir>]"
-  exit 1
+  grep '^#' "$0" | sed -e 's/^#//'; exit 1
 }
 
-while getopts "n:a:d:" opt; do
+# valeurs par défaut
+BASE_DIR=$(pwd)
+LOCALES="fr,en"
+DEFAULT_LOCALE=""
+ENABLE_PWA=false
+
+# parse options
+while getopts "n:a:d:l:D:ph" opt; do
   case $opt in
-    n) PROJECT_NAME="$OPTARG" ;;
-    a) AUTHOR_NAME="$OPTARG" ;;
-    d) BASE_DIR="$OPTARG" ;;
+    n) PROJECT_NAME="$OPTARG" ;; 
+    a) AUTHOR="$OPTARG" ;; 
+    d) BASE_DIR="$OPTARG" ;; 
+    l) LOCALES="$OPTARG" ;; 
+    D) DEFAULT_LOCALE="$OPTARG" ;; 
+    p) ENABLE_PWA=true ;; 
+    h) usage ;;
     *) usage ;;
   esac
 done
 
-[[ -z "$PROJECT_NAME" || -z "$AUTHOR_NAME" ]] && usage
-TARGET_DIR="$BASE_DIR/$PROJECT_NAME"
-NEO_USER=${SUDO_USER:-$USER}
-
-# --- Check if running as root ---
-if [[ $EUID -ne 0 ]]; then
-  echo "🚨 This script must be run with sudo" >&2
-  exit 1
+if [[ -z "${PROJECT_NAME-}" || -z "${AUTHOR-}" ]]; then
+  echo "Erreur : -n et -a sont obligatoires." >&2
+  usage
 fi
 
-# --- Check for apt-get, Git, Curl, jq ---
-command -v apt-get &>/dev/null || { echo "apt-get required"; exit 1; }
-for pkg in git curl jq; do
-  if ! dpkg -s "$pkg" &>/dev/null; then
-    DEBIAN_FRONTEND=noninteractive apt-get update -qq
-    apt-get install -y --no-install-recommends "$pkg"
-  fi
+# derive default locale
+if [[ -z "$DEFAULT_LOCALE" ]]; then
+  DEFAULT_LOCALE="${LOCALES%%,*}"
+fi
+
+TARGET="${BASE_DIR%/}/$PROJECT_NAME"
+
+# create Next.js project
+echo "→ Création du projet Next.js : $PROJECT_NAME"
+npx create-next-app@latest "$PROJECT_NAME" \
+  --use-npm --eslint --tailwind --src-dir
+
+cd "$PROJECT_NAME"
+
+# rewrite next.config.js with i18n (and optionally PWA)
+CONFIG="next.config.js"
+echo "→ Configuration i18n dans $CONFIG"
+if \$ENABLE_PWA; then
+  echo "→ Activation PWA via next-pwa"
+  # installer next-pwa
+  npm install -D next-pwa
+  cat > "$CONFIG" <<EOF
+const withPWA = require('next-pwa')({ dest: 'public' });
+
+module.exports = withPWA({
+  i18n: {
+    locales: [${LOCALES//,/','/}],
+    defaultLocale: '$DEFAULT_LOCALE',
+    localeDetection: true,
+  },
+});
+EOF
+else
+  cat > "$CONFIG" <<EOF
+module.exports = {
+  i18n: {
+    locales: [${LOCALES//,/','/}],
+    defaultLocale: '$DEFAULT_LOCALE',
+    localeDetection: true,
+  },
+};
+EOF
+fi
+
+# créer dossiers de locales
+echo "→ Création des fichiers de traduction (locales)"
+mkdir -p locales
+IFS=',' read -ra LANGS <<< "$LOCALES"
+for L in "${LANGS[@]}"; do
+  mkdir -p locales/$L
+  cat > locales/$L/common.json <<EOF
+{
+  "welcome": "Bienvenue",
+  "hello": "Bonjour"
+}
+EOF
 done
 
-# --- Node.js Functions ---
-get_node_major() { command -v node &>/dev/null && node -v | cut -d. -f1 | sed 's/v//' || echo 0; }
-install_node() {
-  curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_MINIMUM}.x | bash - \
-    && apt-get install -y nodejs
-  echo "Node $(node -v) & npm $(npm -v) installed"
-}
-ensure_node() {
-  local maj=$(get_node_major)
-  [[ $maj -lt $NODE_MAJOR_MINIMUM ]] && install_node || echo "Node up to date ($(node -v))"
-}
-
-# --- Prepare target directory ---
-mkdir -p "$TARGET_DIR"
-chown "$NEO_USER:$NEO_USER" "$TARGET_DIR"
-chmod 755 "$TARGET_DIR"
-
-# --- Install Git, Node, npm ---
-ensure_node
-command -v npm &>/dev/null || apt-get install -y npm
-
-echo "→ create-next-app..."
-sudo -H -u "$NEO_USER" bash -lc \
-  "cd '$BASE_DIR' && npx create-next-app@latest '$PROJECT_NAME' --use-npm --eslint --no-src-dir --template default"
-
-# --- Dev dependencies ---
-echo "→ npm install dev deps..."
-sudo -H -u "$NEO_USER" bash -lc \
-  "cd '$TARGET_DIR' && npm install -D tailwindcss postcss autoprefixer prettier eslint-config-prettier eslint-plugin-prettier husky lint-staged"
-
-# --- Initialize Tailwind CSS ---
-echo "→ Initializing Tailwind CSS (tailwind.config.js & postcss.config.js)"
-# Use npx to init, without checking local binaries
-run_with_retry_on_engine_error "sudo -H -u \"$NEO_USER\" bash -lc \"cd '$TARGET_DIR' && npx tailwindcss@latest init -p\""
-
-# Recreate Tailwind/PostCSS config files
-cat > "$TARGET_DIR/tailwind.config.js" << 'EOF'
-module.exports = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}"
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+# générer manifest si PWA
+if \$ENABLE_PWA; then
+  echo "→ Génération de public/manifest.json"
+  mkdir -p public/icons
+  cat > public/manifest.json <<EOF
+{
+  "name": "$PROJECT_NAME",
+  "short_name": "$PROJECT_NAME",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
 }
 EOF
+  echo "(Placez vos icônes 192x192 et 512x512 dans public/icons/)"
+fi
 
-cat > "$TARGET_DIR/postcss.config.js" << 'EOF'
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
+# créer license MIT
+echo "→ Génération LICENSE MIT"
+echo "MIT License
+
+Copyright (c) $(date +%Y) $AUTHOR
+
+Permission is hereby granted...
+" > LICENSE
+
+# init Git
+echo "→ Initialisation Git"
+git init
+git add .
+git commit -m "chore: scaffolder Next.js + i18n$( \$ENABLE_PWA && echo "+PWA" )"
+
+# résumé
+cat <<EOF
+
+🎉 Projet '$PROJECT_NAME' généré dans $(pwd).
+Available scripts:
+  npm install   # installer les dépendances
+  npm run dev   # démarrer le serveur de dev
+
+Locales: $LOCALES (default: $DEFAULT_LOCALE)
 EOF
-
-# --- Configure Prettier & lint-staged ---
-cat > "$TARGET_DIR/.prettierrc" << 'EOF'
-{ "semi":true, "singleQuote":true, "printWidth":80, "tabWidth":2, "trailingComma":"es5" }
-EOF
-cat > "$TARGET_DIR/.lintstagedrc" << 'EOF'
-{ "*.{js,jsx,ts,tsx}":["eslint --fix","prettier --write"],"*.{css,scss,md}":["prettier --write"] }
-EOF
-
-# --- Husky pre-commit ---
-sudo -H -u "$NEO_USER" bash -lc "cd '$TARGET_DIR' && npx husky install && npx husky add .husky/pre-commit \"npx lint-staged\""
-
-# --- LICENSE ---
-year=$(date +%Y)
-cat > "$TARGET_DIR/LICENSE" << EOF
-MIT License
-
-Copyright (c) $year $AUTHOR_NAME
-
-Permission is hereby granted, free of charge, to any person obtaining a copy...
-EOF
-chown "$NEO_USER:$NEO_USER" "$TARGET_DIR/LICENSE"
-
-# --- package.json license field ---
-jq '.license="MIT"' "$TARGET_DIR/package.json" > tmp && mv tmp "$TARGET_DIR/package.json"
-
-# --- Git init & first commit ---
-sudo -H -u "$NEO_USER" bash -lc "cd '$TARGET_DIR' && git init && git add . && git commit -m '[Kickstarter] Init $PROJECT_NAME'"
-
-echo "🚀 Project $PROJECT_NAME installed in $TARGET_DIR"
